@@ -1,0 +1,72 @@
+UC1:	CREATE DATABASE AddressBookServiceDB;
+
+UC2: 	CREATE TABLE address_book(First_Name varchar(20),
+				    Last_Name varchar(20),
+				    Address varchar(70),
+				    City varchar(20),
+			 	    State varchar(20),
+			 	    Zip int,
+				    Phone_Number int,
+				    Email varchar(40));
+
+UC3: 	INSERT INTO address_book VALUES('David', 'Alapat', 'India', 'Thrissur', 'Kerala', 123, 1234567890, 'hi@gmail.com');
+	INSERT INTO address_book VALUES('James', 'Rollins', 'US', 'NYC', 'NY', 456, 1987456129, 'hey@gmail.com');
+	INSERT INTO address_book VALUES('Rick', 'Riordan', 'US', 'LA', 'Cali', 789, 1594897269, 'yolo@gmail.com');
+	INSERT INTO address_book VALUES('Bill', 'Gates', 'US', 'SF', 'Cali', 159, 567892139, 'win@gmail.com');
+
+UC4: 	UPDATE address_book SET city='Brooklyn' WHERE First_Name='James';
+
+UC5: 	DELETE FROM address_book WHERE First_Name='Rick';
+
+UC6: 	SELECT First_Name, Last_Name FROM address_book WHERE City='Brooklyn' OR State='Kerala';
+
+UC7: 	SELECT COUNT(City) FROM address_book GROUP BY City;
+	SELECT COUNT(State) FROM address_book GROUP BY State;
+
+UC8: 	SELECT First_Name, Last_Name, City FROM address_book ORDER BY First_Name;
+
+UC9: 	ALTER TABLE address_book ADD Type varchar(30);
+	UPDATE address_book SET Type='Family' WHERE First_Name='David';
+
+UC10: 	SELECT COUNT(*) FROM address_book GROUP BY Type;
+
+UC11: 	CREATE TABLE type AS (SELECT First_Name, Type FROM address_book);
+	INSERT INTO type VALUES ('David', 'Family');
+	INSERT INTO type VALUES ('David', 'Friend');
+
+Normalization: 
+	CREATE TABLE address AS (SELECT First_Name, Address, City, State, Zip FROM address_book);	
+	ALTER TABLE address_book DROP Address, DROP City, DROP State, DROP Zip;
+
+UC13:	SELECT ab.First_Name, ab.Last_Name FROM address_book ab
+		LEFT JOIN address a
+		ON ab.First_Name = a.First_Name		
+		WHERE City='Brooklyn' OR State='Kerala';
+
+	SELECT COUNT(a.City) FROM address_book ab
+		LEFT JOIN address a
+		ON ab.First_Name = a.First_Name
+		GROUP BY a.City;
+
+	SELECT COUNT(a.State) FROM address_book ab
+		LEFT JOIN address a
+		ON ab.First_Name = a.First_Name
+		GROUP BY a.State;
+	
+	SELECT ab.First_Name, ab.Last_Name, a.City FROM address_book ab
+		LEFT JOIN address a
+		ON ab.First_Name = a.First_Name
+		ORDER BY ab.First_Name;
+
+	SELECT COUNT(*) FROM address_book ab
+		LEFT JOIN Type t
+		ON ab.First_Name = t.First_Name	
+		GROUP BY t.Type;
+
+	SELECT ab.First_Name, ab.Last_Name, ab.Phone_Number,
+		ab.Email, a.Address, a.City, a.State, a.Zip, t.Type
+			FROM address_book ab
+			LEFT JOIN address a
+			ON ab.First_Name = a.First_Name
+			LEFT JOIN type t
+			ON ab.First_Name = t.First_Name;
